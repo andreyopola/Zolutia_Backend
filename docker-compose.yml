@@ -1,0 +1,122 @@
+version: '2'
+services:
+
+  search:
+    container_name: "zolutia_search"
+    image: gcr.io/copper-oven-193619/zol-search:test
+    restart: always
+    links:
+        - mongodb:mongodb
+    networks:
+     - backend
+
+  auth:
+    container_name: "zolutia_auth"
+    image: gcr.io/copper-oven-193619/zol-auth:test
+    restart: always
+    links:
+        - mongodb:mongodb
+    networks:
+     - backend
+
+  notification:
+    container_name: "zolutia_notification"
+    image: gcr.io/copper-oven-193619/zol-notifications:test
+    restart: always
+    links:
+        - mongodb:mongodb
+    networks:
+     - backend
+
+  payment:
+    container_name: "zolutia_payment"
+    image: gcr.io/copper-oven-193619/zol-payments:test
+    restart: always
+    links:
+        - mongodb:mongodb
+    networks:
+     - backend
+
+  shipping:
+    container_name: "zolutia_shipping"
+    image: gcr.io/copper-oven-193619/zol-shipping:test
+    restart: always
+    links:
+        - mongodb:mongodb
+    networks:
+     - backend
+     
+  scheduler1:
+    container_name: "zolutia_scheduler1"
+    image: gcr.io/copper-oven-193619/zol-scheduler1:test
+    restart: always
+    links:
+        - mongodb:mongodb
+        - notification:notification
+    networks:
+     - backend
+     
+  scheduler2:
+    container_name: "zolutia_scheduler2"
+    image: gcr.io/copper-oven-193619/zol-scheduler2:test
+    restart: always
+    links:
+        - mongodb:mongodb
+        - shipping:shipping
+    networks:
+     - backend
+
+  act:
+    container_name: "zolutia_act"
+    image: gcr.io/copper-oven-193619/zol-act:test
+    ports:
+    - "5000:5000"
+    restart: always
+    links:
+        - mongodb:mongodb
+    networks:
+     - backend
+     - bridge
+     
+  mongodb:
+    container_name: "zolutia_mongodb"
+    image: mongo:3.4
+    restart: always
+    ports:
+    - "127.0.0.1:27017:27017"
+    volumes:
+        - "data_volume:/data/db"
+    networks:
+     - backend
+
+  backend:
+    container_name: "zolutia_backend"
+    image: gcr.io/copper-oven-193619/zol-backend:test
+    restart: always
+    links:
+        - mongodb:mongodb
+        - auth:authentication
+        - search:search
+        - payment:payment
+        - notification:notification
+    ports:
+    - "2020:80"
+    networks:
+     - backend
+     - bridge
+
+  frontend:
+    container_name: "zolutia_frontend"
+    image: gcr.io/copper-oven-193619/zol-frontend:test
+    restart: always
+    ports:
+    - "80:80"
+    networks:
+     - bridge
+
+networks:
+  backend:
+  bridge:
+
+volumes:
+  data_volume:

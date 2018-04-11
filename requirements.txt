@@ -1,0 +1,10 @@
+pymongo==3.5.1
+requests==2.18.4
+Flask_Script==2.0.6
+Flask_Cors==3.0.3
+Werkzeug==0.12.2
+boto3==1.4.8
+Flask==0.12.2
+Flask_RESTful==0.3.6
+schedule==0.5.0
+boto3==1.4.8
